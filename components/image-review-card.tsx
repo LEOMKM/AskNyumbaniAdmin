@@ -76,10 +76,14 @@ export function ImageReviewCard({
 
   const handleQuickApprove = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (confirm('Approve this image?')) {
+    const message = image.property_title ? `Approve image for "${image.property_title}"?` : 'Approve this image?'
+    if (confirm(message)) {
       try {
         await approveImage.mutateAsync({
-          imageId: image.id
+          imageId: image.id,
+          propertyId: image.property_id,
+          propertyTitle: image.property_title,
+          imageUrl: image.image_url,
         })
       } catch (error) {
         console.error('Failed to approve image:', error)
@@ -96,7 +100,9 @@ export function ImageReviewCard({
         await rejectImage.mutateAsync({
           imageId: image.id,
           imageUrl: image.image_url,
-          rejectionReason: reason.trim()
+          rejectionReason: reason.trim(),
+          propertyId: image.property_id,
+          propertyTitle: image.property_title,
         })
       } catch (error) {
         console.error('Failed to reject image:', error)
@@ -200,7 +206,7 @@ export function ImageReviewCard({
 
           {/* Quick Actions for Pending Images */}
           {image.admin_approved === null && (
-            <div className="flex space-x-2 pt-2">
+            <div className="mt-3 border-t border-border pt-3 flex gap-2">
               <Button
                 size="sm"
                 onClick={handleQuickApprove}

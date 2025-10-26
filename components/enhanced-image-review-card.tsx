@@ -78,11 +78,16 @@ export function EnhancedImageReviewCard({
 
   const handleQuickApprove = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    const comment = prompt('Add a comment (optional):')
+    const message = image.property_title ? `Approve image for "${image.property_title}"?` : 'Approve this image?'
+    if (!confirm(message)) {
+      return
+    }
     try {
       await approveImage.mutateAsync({ 
         imageId: image.id,
-        comment: comment?.trim() || null
+        propertyId: image.property_id,
+        propertyTitle: image.property_title,
+        imageUrl: image.image_url,
       })
     } catch (error) {
       console.error('Failed to approve image:', error)
@@ -93,12 +98,13 @@ export function EnhancedImageReviewCard({
     e.stopPropagation()
     const reason = prompt('Please provide a reason for rejection:')
     if (reason && reason.trim()) {
-      const comment = prompt('Add a comment (optional):')
       try {
         await rejectImage.mutateAsync({ 
           imageId: image.id, 
           rejectionReason: reason.trim(),
-          comment: comment?.trim() || null
+          imageUrl: image.image_url,
+          propertyId: image.property_id,
+          propertyTitle: image.property_title,
         })
       } catch (error) {
         console.error('Failed to reject image:', error)
@@ -227,12 +233,12 @@ export function EnhancedImageReviewCard({
 
           {/* Quick Actions for Pending Images */}
           {image.admin_approved === null && (
-            <div className="flex space-x-2 pt-3 border-t border-border">
+            <div className="mt-3 border-t border-border pt-3 flex flex-col gap-2 sm:flex-row sm:gap-3">
               <Button
                 size="sm"
                 onClick={handleQuickApprove}
                 disabled={isProcessing}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white shadow-sm"
               >
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Approve
@@ -242,7 +248,7 @@ export function EnhancedImageReviewCard({
                 variant="destructive"
                 onClick={handleQuickReject}
                 disabled={isProcessing}
-                className="flex-1 shadow-sm"
+                className="w-full sm:flex-1 shadow-sm"
               >
                 <XCircle className="h-3 w-3 mr-1" />
                 Reject

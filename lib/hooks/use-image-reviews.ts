@@ -1,7 +1,35 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase/client'
-import { PropertyImage } from '@/lib/types/database'
+import { PropertyImage, AdminActivityLog } from '@/lib/types/database'
 import { useAuth } from '@/lib/contexts/auth-context'
+
+type ActivityMetadata = Record<string, unknown>
+
+async function logAdminActivity(params: {
+  adminUserId: string
+  activityType: AdminActivityLog['activity_type']
+  description: string
+  metadata?: ActivityMetadata
+}) {
+  const { adminUserId, activityType, description, metadata } = params
+
+  try {
+    const { error } = await supabase.from('admin_activity_log').insert([
+      {
+        admin_user_id: adminUserId,
+        activity_type: activityType,
+        description,
+        metadata: metadata ?? null,
+      },
+    ])
+
+    if (error) {
+      throw error
+    }
+  } catch (error) {
+    console.error('Failed to log admin activity:', error)
+  }
+}
 
 // Fetch pending image reviews
 export function usePendingImageReviews() {
@@ -37,12 +65,19 @@ export function useImageReviewHistory() {
 }
 
 // Approve image mutation (no comments)
+interface ApproveImageInput {
+  imageId: string
+  propertyId?: string
+  propertyTitle?: string
+  imageUrl?: string
+}
+
 export function useApproveImage() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
 
   return useMutation({
-    mutationFn: async ({ imageId }: { imageId: string }) => {
+    mutationFn: async ({ imageId, propertyId, propertyTitle, imageUrl }: ApproveImageInput) => {
       if (!user) {
         throw new Error('User not authenticated')
       }
@@ -53,22 +88,44 @@ export function useApproveImage() {
       })
 
       if (error) throw error
+
+      await logAdminActivity({
+        adminUserId: user.id,
+        activityType: 'image_approved',
+        description: `Approved property image${propertyTitle ? ` for "${propertyTitle}"` : ''}`,
+        metadata: {
+          imageId,
+          propertyId: propertyId ?? null,
+          propertyTitle: propertyTitle ?? null,
+          imageUrl: imageUrl ?? null,
+          action: 'approve',
+        },
+      })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-image-reviews'] })
       queryClient.invalidateQueries({ queryKey: ['image-review-history'] })
       queryClient.invalidateQueries({ queryKey: ['image-review-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-activity-log'] })
     },
   })
 }
 
 // Reject image mutation (requires reason, deletes image)
+interface RejectImageInput {
+  imageId: string
+  imageUrl: string
+  rejectionReason: string
+  propertyId?: string
+  propertyTitle?: string
+}
+
 export function useRejectImage() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
 
   return useMutation({
-    mutationFn: async ({ imageId, imageUrl, rejectionReason }: { imageId: string; imageUrl: string; rejectionReason: string }) => {
+    mutationFn: async ({ imageId, imageUrl, rejectionReason, propertyId, propertyTitle }: RejectImageInput) => {
       if (!user) {
         throw new Error('User not authenticated')
       }
@@ -112,11 +169,26 @@ export function useRejectImage() {
       })
 
       if (error) throw error
+
+      await logAdminActivity({
+        adminUserId: user.id,
+        activityType: 'image_rejected',
+        description: `Rejected property image${propertyTitle ? ` for "${propertyTitle}"` : ''}`,
+        metadata: {
+          imageId,
+          propertyId: propertyId ?? null,
+          propertyTitle: propertyTitle ?? null,
+          imageUrl: imageUrl ?? null,
+          rejectionReason: rejectionReason.trim(),
+          action: 'reject',
+        },
+      })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-image-reviews'] })
       queryClient.invalidateQueries({ queryKey: ['image-review-history'] })
       queryClient.invalidateQueries({ queryKey: ['image-review-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-activity-log'] })
     },
   })
 }
@@ -124,6 +196,7 @@ export function useRejectImage() {
 // Bulk approve images
 export function useBulkApproveImages() {
   const queryClient = useQueryClient()
+  const { user } = useAuth()
 
   return useMutation({
     mutationFn: async (imageIds: string[]) => {
@@ -136,10 +209,23 @@ export function useBulkApproveImages() {
         .in('id', imageIds)
 
       if (error) throw error
+
+      if (user && imageIds.length > 0) {
+        await logAdminActivity({
+          adminUserId: user.id,
+          activityType: 'bulk_image_approved',
+          description: `Bulk approved ${imageIds.length} image${imageIds.length === 1 ? '' : 's'}`,
+          metadata: {
+            imageIds,
+            action: 'bulk_approve',
+          },
+        })
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-image-reviews'] })
       queryClient.invalidateQueries({ queryKey: ['image-review-history'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-activity-log'] })
     },
   })
 }
@@ -176,5 +262,22 @@ export function useImageReviewStats() {
       }
     },
     refetchInterval: 60000, // Refetch every minute
+  })
+}
+
+export function useAdminActivityLog(limit = 10) {
+  return useQuery({
+    queryKey: ['admin-activity-log', limit],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('admin_activity_log')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (error) throw error
+      return data as AdminActivityLog[]
+    },
+    refetchInterval: 60000,
   })
 }

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { ImageReviewGrid } from '@/components/image-review-grid'
 import { ImageReviewFilters } from '@/components/image-review-filters'
+import { AdminActivityLog } from '@/components/admin-activity-log'
 import { useImageReviewStats } from '@/lib/hooks/use-image-reviews'
 import { CheckCircle, XCircle, Clock, Image as ImageIcon } from 'lucide-react'
 
@@ -76,8 +77,15 @@ export function ImageReviewDashboard() {
           onFilterChange={setFilter}
         />
 
-        {/* Image Review Grid */}
-        <ImageReviewGrid filter={filter} />
+        {/* Image Review Grid + Activity */}
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[3fr,1fr]">
+          <div className="space-y-6">
+            <ImageReviewGrid filter={filter} />
+          </div>
+          <div className="xl:sticky xl:top-6 xl:self-start">
+            <AdminActivityLog />
+          </div>
+        </div>
       </div>
     </div>
   )

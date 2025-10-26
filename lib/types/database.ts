@@ -1,6 +1,40 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json }
+  | Json[]
+
 export interface Database {
   public: {
     Tables: {
+      admin_activity_log: {
+        Row: {
+          id: string
+          admin_user_id: string
+          activity_type: string
+          description: string | null
+          metadata: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          admin_user_id: string
+          activity_type: string
+          description?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          admin_user_id?: string
+          activity_type?: string
+          description?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+      }
       profiles: {
         Row: {
           id: string
@@ -152,6 +186,7 @@ export interface Database {
           admin_reviewed_at: string | null
           admin_reviewed_by: string | null
           admin_rejection_reason: string | null
+          admin_comment: string | null
         }
         Insert: {
           id?: string
@@ -166,6 +201,7 @@ export interface Database {
           admin_reviewed_at?: string | null
           admin_reviewed_by?: string | null
           admin_rejection_reason?: string | null
+          admin_comment?: string | null
         }
         Update: {
           id?: string
@@ -180,6 +216,7 @@ export interface Database {
           admin_reviewed_at?: string | null
           admin_reviewed_by?: string | null
           admin_rejection_reason?: string | null
+          admin_comment?: string | null
         }
       }
     }
@@ -189,3 +226,4 @@ export interface Database {
 export type PropertyImage = Database['public']['Tables']['property_images']['Row']
 export type Property = Database['public']['Tables']['properties']['Row']
 export type Profile = Database['public']['Tables']['profiles']['Row']
+export type AdminActivityLog = Database['public']['Tables']['admin_activity_log']['Row']

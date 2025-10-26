@@ -45,7 +45,10 @@ export function ImageReviewModal({ image, isOpen, onClose }: ImageReviewModalPro
   const handleApprove = async () => {
     try {
       await approveImage.mutateAsync({
-        imageId: image.id
+        imageId: image.id,
+        propertyId: image.property_id,
+        propertyTitle: image.property_title,
+        imageUrl: image.image_url,
       })
       onClose()
     } catch (error) {
@@ -64,7 +67,9 @@ export function ImageReviewModal({ image, isOpen, onClose }: ImageReviewModalPro
       await rejectImage.mutateAsync({
         imageId: image.id,
         imageUrl: image.image_url,
-        rejectionReason: rejectionReason.trim()
+        rejectionReason: rejectionReason.trim(),
+        propertyId: image.property_id,
+        propertyTitle: image.property_title,
       })
       onClose()
     } catch (error) {
@@ -219,11 +224,11 @@ export function ImageReviewModal({ image, isOpen, onClose }: ImageReviewModalPro
 
               <div className="space-y-4">
                 {/* Quick approve with no comment */}
-                <div className="flex space-x-3">
+                <div className="mt-2 flex flex-col sm:flex-row sm:justify-start">
                   <Button
                     onClick={handleApprove}
                     disabled={approveImage.isPending || rejectImage.isPending}
-                    className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                    className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />
                     {approveImage.isPending ? 'Approving...' : 'Approve Image'}
@@ -240,17 +245,22 @@ export function ImageReviewModal({ image, isOpen, onClose }: ImageReviewModalPro
                     className="mt-2 border-red-200 focus:border-red-500"
                     rows={3}
                   />
-                  <div className="flex space-x-3 mt-3">
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:gap-3">
                     <Button
                       variant="destructive"
                       onClick={handleReject}
                       disabled={rejectImage.isPending || approveImage.isPending || !rejectionReason.trim()}
-                      className="flex-1"
+                      className="w-full sm:flex-1"
                     >
                       <XCircle className="h-4 w-4 mr-2" />
                       {rejectImage.isPending ? 'Rejecting...' : 'Reject & Delete Image'}
                     </Button>
-                    <Button variant="outline" onClick={onClose} disabled={rejectImage.isPending || approveImage.isPending}>
+                    <Button
+                      variant="outline"
+                      onClick={onClose}
+                      disabled={rejectImage.isPending || approveImage.isPending}
+                      className="w-full sm:w-auto"
+                    >
                       Cancel
                     </Button>
                   </div>

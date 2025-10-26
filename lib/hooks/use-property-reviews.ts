@@ -198,20 +198,17 @@ export function useApprovePropertyImages() {
     mutationFn: async ({
       propertyId,
       imageIds,
-      adminUserId,
-      comment
+      adminUserId
     }: {
       propertyId: string
       imageIds: string[]
       adminUserId: string
-      comment?: string | null
     }) => {
       // Approve each image
       const approvePromises = imageIds.map(imageId =>
         supabase.rpc('approve_property_image', {
           p_image_id: imageId,
-          p_admin_user_id: adminUserId,
-          p_comment: comment
+          p_admin_user_id: adminUserId
         })
       )
 
@@ -239,22 +236,19 @@ export function useRejectPropertyImages() {
       propertyId,
       imageIds,
       adminUserId,
-      rejectionReason,
-      comment
+      rejectionReason
     }: {
       propertyId: string
       imageIds: string[]
       adminUserId: string
       rejectionReason: string
-      comment?: string | null
     }) => {
       // Reject each image
       const rejectPromises = imageIds.map(imageId =>
         supabase.rpc('reject_property_image', {
           p_image_id: imageId,
           p_admin_user_id: adminUserId,
-          p_rejection_reason: rejectionReason,
-          p_comment: comment
+          p_rejection_reason: rejectionReason
         })
       )
 
