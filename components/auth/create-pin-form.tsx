@@ -125,7 +125,7 @@ export function CreatePinForm({ onSuccess }: CreatePinFormProps) {
             {[0, 1, 2, 3].map((index) => (
               <input
                 key={index}
-                ref={(el) => (pinInputRefs.current[index] = el)}
+                ref={(el) => { pinInputRefs.current[index] = el }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
@@ -149,7 +149,7 @@ export function CreatePinForm({ onSuccess }: CreatePinFormProps) {
             {[0, 1, 2, 3].map((index) => (
               <input
                 key={index}
-                ref={(el) => (confirmPinInputRefs.current[index] = el)}
+                ref={(el) => { confirmPinInputRefs.current[index] = el }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}

@@ -3,12 +3,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAdminActivityLog } from '@/lib/hooks/use-image-reviews'
 import { formatDistanceToNow } from 'date-fns'
-import { Activity, CheckCircle, Loader2, XCircle, Images } from 'lucide-react'
+import { Activity, CheckCircle, Loader2, XCircle, Image } from 'lucide-react'
 
 const activityIconMap: Record<string, JSX.Element> = {
   image_approved: <CheckCircle className="h-4 w-4 text-green-600" />,
   image_rejected: <XCircle className="h-4 w-4 text-red-600" />,
-  bulk_image_approved: <Images className="h-4 w-4 text-primary" />,
+  bulk_image_approved: <Image className="h-4 w-4 text-primary" />,
 }
 
 function ActivityIcon({ type }: { type: string }) {
