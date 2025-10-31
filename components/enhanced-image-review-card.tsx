@@ -117,8 +117,8 @@ export function EnhancedImageReviewCard({
   return (
     <>
       <Card className={`
-        relative transition-all duration-300 hover:shadow-xl hover:scale-[1.02]
-        ${isSelected ? 'ring-2 ring-primary ring-offset-2 shadow-lg' : 'shadow-md'}
+        relative transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-2
+        ${isSelected ? 'ring-2 ring-primary ring-offset-2 shadow-xl scale-[1.02]' : 'shadow-md'}
         ${isProcessing ? 'opacity-50 pointer-events-none' : ''}
         group overflow-hidden
       `}>
@@ -152,25 +152,25 @@ export function EnhancedImageReviewCard({
         <div className="relative aspect-square overflow-hidden">
           {imageError ? (
             <div className="flex items-center justify-center h-full bg-muted">
-              <AlertTriangle className="h-12 w-12 text-muted-foreground" />
+              <AlertTriangle className="h-12 w-12 text-muted-foreground animate-pulse" />
             </div>
           ) : (
             <Image
               src={image.image_url}
               alt={image.caption || 'Property image'}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-500 group-hover:scale-110 group-hover:rotate-1"
               onError={() => setImageError(true)}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           )}
-          
+
           {/* Overlay on hover */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
             <Button
               variant="secondary"
               size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg"
+              className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 shadow-lg hover:scale-110"
               onClick={() => setIsModalOpen(true)}
             >
               <Eye className="h-4 w-4 mr-2" />
@@ -238,9 +238,9 @@ export function EnhancedImageReviewCard({
                 size="sm"
                 onClick={handleQuickApprove}
                 disabled={isProcessing}
-                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white shadow-sm transition-all duration-200 hover:scale-105 hover:shadow-lg group/approve"
               >
-                <CheckCircle className="h-3 w-3 mr-1" />
+                <CheckCircle className="h-3 w-3 mr-1 transition-transform group-hover/approve:rotate-12 group-hover/approve:scale-110" />
                 Approve
               </Button>
               <Button
@@ -248,9 +248,9 @@ export function EnhancedImageReviewCard({
                 variant="destructive"
                 onClick={handleQuickReject}
                 disabled={isProcessing}
-                className="w-full sm:flex-1 shadow-sm"
+                className="w-full sm:flex-1 shadow-sm transition-all duration-200 hover:scale-105 hover:shadow-lg group/reject"
               >
-                <XCircle className="h-3 w-3 mr-1" />
+                <XCircle className="h-3 w-3 mr-1 transition-transform group-hover/reject:rotate-12 group-hover/reject:scale-110" />
                 Reject
               </Button>
             </div>

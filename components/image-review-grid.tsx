@@ -66,16 +66,16 @@ export function ImageReviewGrid({ filter }: ImageReviewGridProps) {
 
   if (error) {
     return (
-      <Card>
+      <Card className="animate-in fade-in zoom-in duration-500">
         <CardContent className="p-8 text-center">
-          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4 animate-pulse" />
+          <h3 className="text-lg font-semibold text-foreground mb-2 animate-in slide-in-from-top duration-300 delay-100">
             Error Loading Images
           </h3>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-4 animate-in fade-in duration-300 delay-200">
             There was an error loading the image data. Please try again.
           </p>
-          <Button onClick={() => window.location.reload()}>
+          <Button onClick={() => window.location.reload()} className="animate-in slide-in-from-bottom duration-300 delay-300 hover:scale-105 transition-transform">
             Retry
           </Button>
         </CardContent>
@@ -85,11 +85,16 @@ export function ImageReviewGrid({ filter }: ImageReviewGridProps) {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="animate-in fade-in zoom-in duration-500">
         <CardContent className="p-8">
-          <div className="flex items-center justify-center space-x-2">
-            <Clock className="h-6 w-6 animate-spin text-primary" />
-            <span className="text-muted-foreground">Loading images...</span>
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="relative">
+              <Clock className="h-8 w-8 animate-spin text-primary" />
+              <div className="absolute inset-0 h-8 w-8 animate-ping text-primary opacity-20">
+                <Clock className="h-8 w-8" />
+              </div>
+            </div>
+            <span className="text-muted-foreground animate-pulse">Loading images...</span>
           </div>
         </CardContent>
       </Card>
@@ -127,13 +132,13 @@ export function ImageReviewGrid({ filter }: ImageReviewGridProps) {
     const EmptyIcon = emptyState.icon
 
     return (
-      <Card>
+      <Card className="animate-in fade-in zoom-in duration-500">
         <CardContent className="p-8 text-center">
-          <EmptyIcon className={`h-12 w-12 ${emptyState.color} mx-auto mb-4`} />
-          <h3 className="text-lg font-semibold text-foreground mb-2">
+          <EmptyIcon className={`h-12 w-12 ${emptyState.color} mx-auto mb-4 animate-in zoom-in duration-300`} />
+          <h3 className="text-lg font-semibold text-foreground mb-2 animate-in slide-in-from-top duration-300 delay-100">
             {emptyState.title}
           </h3>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground animate-in fade-in duration-300 delay-200">
             {emptyState.description}
           </p>
         </CardContent>
@@ -145,7 +150,7 @@ export function ImageReviewGrid({ filter }: ImageReviewGridProps) {
     <div className="space-y-6">
       {/* Header with bulk actions */}
       {filter === 'pending' && filteredImages.length > 0 && (
-        <Card>
+        <Card className="animate-in fade-in slide-in-from-top duration-500">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -160,15 +165,17 @@ export function ImageReviewGrid({ filter }: ImageReviewGridProps) {
                 <Button
                   variant="outline"
                   onClick={handleSelectAll}
-                  className="text-sm"
+                  className="text-sm transition-all duration-200 hover:scale-105 hover:shadow-md"
                 >
                   {selectedImages.length === filteredImages.length ? 'Deselect All' : 'Select All'}
                 </Button>
                 {selectedImages.length > 0 && (
-                  <BulkActions
-                    selectedCount={selectedImages.length}
-                    onClear={clearSelection}
-                  />
+                  <div className="animate-in fade-in slide-in-from-right duration-300">
+                    <BulkActions
+                      selectedCount={selectedImages.length}
+                      onClear={clearSelection}
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -178,21 +185,26 @@ export function ImageReviewGrid({ filter }: ImageReviewGridProps) {
 
       {/* Image Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredImages.map((image) => (
-          <EnhancedImageReviewCard
+        {filteredImages.map((image, index) => (
+          <div
             key={image.id}
-            image={image}
-            isSelected={selectedImages.includes(image.id)}
-            onSelect={(selected) => handleImageSelect(image.id, selected)}
-            showSelection={filter === 'pending'}
-          />
+            className="animate-in fade-in zoom-in duration-500"
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <EnhancedImageReviewCard
+              image={image}
+              isSelected={selectedImages.includes(image.id)}
+              onSelect={(selected) => handleImageSelect(image.id, selected)}
+              showSelection={filter === 'pending'}
+            />
+          </div>
         ))}
       </div>
 
       {/* Load More Button (if needed) */}
       {filteredImages.length >= 20 && (
-        <div className="text-center">
-          <Button variant="outline" size="lg">
+        <div className="text-center animate-in fade-in slide-in-from-bottom duration-500">
+          <Button variant="outline" size="lg" className="transition-all duration-200 hover:scale-105 hover:shadow-lg">
             Load More Images
           </Button>
         </div>

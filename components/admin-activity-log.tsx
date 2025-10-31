@@ -21,16 +21,21 @@ export function AdminActivityLog() {
   const content = () => {
     if (isLoading) {
       return (
-        <div className="flex items-center justify-center py-10 text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin mr-2" />
-          Loading activity...
+        <div className="flex flex-col items-center justify-center py-10 text-muted-foreground space-y-3">
+          <div className="relative">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <div className="absolute inset-0 h-6 w-6 animate-ping text-primary opacity-20">
+              <Loader2 className="h-6 w-6" />
+            </div>
+          </div>
+          <span className="animate-pulse">Loading activity...</span>
         </div>
       )
     }
 
     if (error) {
       return (
-        <div className="py-6 text-sm text-red-600">
+        <div className="py-6 text-sm text-red-600 animate-in fade-in duration-300">
           Unable to load activity log. Please try again later.
         </div>
       )
@@ -38,7 +43,7 @@ export function AdminActivityLog() {
 
     if (!data || data.length === 0) {
       return (
-        <div className="py-6 text-sm text-muted-foreground">
+        <div className="py-6 text-sm text-muted-foreground animate-in fade-in duration-300">
           No recent admin activity recorded yet.
         </div>
       )
@@ -46,7 +51,7 @@ export function AdminActivityLog() {
 
     return (
       <div className="space-y-4">
-        {data.map((log) => {
+        {data.map((log, index) => {
           const metadata = (log.metadata ?? {}) as Record<string, unknown>
           const propertyTitle = (metadata.propertyTitle as string) || ''
           const propertyId = (metadata.propertyId as string) || ''
@@ -55,9 +60,10 @@ export function AdminActivityLog() {
           return (
             <div
               key={log.id}
-              className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/30 p-3"
+              className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/30 p-3 transition-all duration-300 hover:shadow-md hover:scale-[1.02] hover:bg-muted/50 animate-in fade-in slide-in-from-right duration-500 group"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="mt-0.5 rounded-full bg-background p-2 shadow-sm">
+              <div className="mt-0.5 rounded-full bg-background p-2 shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
                 <ActivityIcon type={log.activity_type} />
               </div>
               <div className="flex-1 space-y-1">
@@ -86,9 +92,12 @@ export function AdminActivityLog() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Recent Activity</CardTitle>
+    <Card className="transition-all duration-300 hover:shadow-lg">
+      <CardHeader className="group">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Activity className="h-5 w-5 text-primary transition-transform group-hover:rotate-12" />
+          Recent Activity
+        </CardTitle>
       </CardHeader>
       <CardContent>{content()}</CardContent>
     </Card>

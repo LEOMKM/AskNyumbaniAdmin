@@ -38,13 +38,13 @@ export function ImageReviewFilters({ currentFilter, onFilterChange }: ImageRevie
   ]
 
   return (
-    <Card>
+    <Card className="transition-all duration-300 hover:shadow-lg">
       <CardContent className="p-6">
         <div className="flex flex-wrap gap-3">
           {filters.map((filter) => {
             const Icon = filter.icon
             const isActive = currentFilter === filter.key
-            
+
             return (
               <Button
                 key={filter.key}
@@ -54,12 +54,16 @@ export function ImageReviewFilters({ currentFilter, onFilterChange }: ImageRevie
                   ${isActive ? filter.activeBgColor : filter.bgColor}
                   ${filter.color}
                   border-0
-                  transition-colors
+                  transition-all
                   duration-200
                   font-medium
+                  hover:scale-105
+                  hover:shadow-md
+                  ${isActive ? 'ring-2 ring-offset-2 ring-current ring-opacity-50' : ''}
+                  group
                 `}
               >
-                <Icon className="h-4 w-4 mr-2" />
+                <Icon className="h-4 w-4 mr-2 transition-transform group-hover:rotate-12 group-hover:scale-110" />
                 {filter.label}
               </Button>
             )
