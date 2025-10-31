@@ -2,6 +2,9 @@
   "name": "asknyumbani-admin",
   "version": "1.0.0",
   "description": "Admin panel for AskNyumbani real estate app - Image review and approval system",
+  "author": "Codzure Solutions Limited",
+  "company": "Codzure Solutions Limited",
+  "license": "UNLICENSED",
   "private": true,
   "scripts": {
     "dev": "next dev",

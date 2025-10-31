@@ -37,12 +37,42 @@ export function usePendingImageReviews() {
     queryKey: ['pending-image-reviews'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('pending_image_reviews')
-        .select('*')
+        .from('property_images')
+        .select(`
+          *,
+          property:properties(
+            id,
+            title,
+            property_type,
+            deal_type,
+            city,
+            address,
+            price,
+            currency,
+            bedrooms,
+            bathrooms,
+            square_meters
+          )
+        `)
+        .is('admin_approved', null)
         .order('created_at', { ascending: true })
 
       if (error) throw error
-      return data
+
+      // Flatten the data structure to match the expected format
+      return data?.map(img => ({
+        ...img,
+        property_title: img.property?.title,
+        property_address: img.property?.address,
+        property_city: img.property?.city,
+        property_type: img.property?.property_type,
+        deal_type: img.property?.deal_type,
+        price: img.property?.price,
+        currency: img.property?.currency,
+        bedrooms: img.property?.bedrooms,
+        bathrooms: img.property?.bathrooms,
+        size_m2: img.property?.square_meters,
+      })) || []
     },
     refetchInterval: 30000, // Refetch every 30 seconds
   })
@@ -54,12 +84,42 @@ export function useImageReviewHistory() {
     queryKey: ['image-review-history'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('image_review_history')
-        .select('*')
+        .from('property_images')
+        .select(`
+          *,
+          property:properties(
+            id,
+            title,
+            property_type,
+            deal_type,
+            city,
+            address,
+            price,
+            currency,
+            bedrooms,
+            bathrooms,
+            square_meters
+          )
+        `)
+        .not('admin_approved', 'is', null)
         .order('admin_reviewed_at', { ascending: false })
 
       if (error) throw error
-      return data
+
+      // Flatten the data structure to match the expected format
+      return data?.map(img => ({
+        ...img,
+        property_title: img.property?.title,
+        property_address: img.property?.address,
+        property_city: img.property?.city,
+        property_type: img.property?.property_type,
+        deal_type: img.property?.deal_type,
+        price: img.property?.price,
+        currency: img.property?.currency,
+        bedrooms: img.property?.bedrooms,
+        bathrooms: img.property?.bathrooms,
+        size_m2: img.property?.square_meters,
+      })) || []
     },
   })
 }
