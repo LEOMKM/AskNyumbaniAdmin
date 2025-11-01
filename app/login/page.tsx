@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuth } from '@/lib/contexts/auth-context'
 import { PinForm } from '@/components/auth/pin-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -88,7 +89,22 @@ export default function LoginPage() {
           </Card>
 
           {/* Footer */}
-          <div className="text-center mt-8 text-sm text-muted-foreground space-y-2 animate-in fade-in duration-700 delay-1000">
+          <div className="text-center mt-8 text-sm text-muted-foreground space-y-3 animate-in fade-in duration-700 delay-1000">
+            <div className="flex justify-center items-center gap-3 flex-wrap">
+              <Link
+                href="/privacy"
+                className="text-primary hover:text-primary/80 transition-colors hover:underline"
+              >
+                Privacy Policy
+              </Link>
+              <span className="text-muted-foreground/50">•</span>
+              <Link
+                href="/terms"
+                className="text-primary hover:text-primary/80 transition-colors hover:underline"
+              >
+                Terms of Service
+              </Link>
+            </div>
             <p className="transition-colors hover:text-foreground cursor-default">© 2024 Codzure Solutions Limited. All rights reserved.</p>
             <p className="transition-colors hover:text-foreground cursor-default">AskNyumbani Real Estate Platform</p>
           </div>
